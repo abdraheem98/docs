@@ -1,0 +1,52 @@
+1. Create a server -- t2.medium or t2.large with 30 gb or 50 gb storage
+
+2. Install Jdk 17, jenkins, docker. sonarqube
+
+	java - sudo apt install openjdk-17-jdk -y
+	Jenkins: https://www.jenkins.io/doc/book/installing/linux/
+	docker: https://docs.docker.com/engine/install/ubuntu/
+	Sonarqube: sudo docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
+	sudo usermod -aG docker ubuntu
+	sudo chmod 777 /var/run/docker.sock
+	
+3. Connect to the jenkins server with port 8080 and get the initial admin password in this path: sudo cat /var/lib/jenkins/secrets/initialAdminPassword.
+
+4. Then Install suggested plugins and create the user ---> login to the jenkins server
+
+5. After login, Install the necessary plugins: GO to the manage jenkins ----> Plugins ----> (eclipse, nodejs, sonar related plugins, docker related plugins)
+
+6.  GO to the manage jenkins ----> Tools -----> Configure jdk installation, sonarqube scanner installation, nodejs installation, docker installation.
+
+7. Login to sonarqube server with port 9000.. admin is the username and password.
+
+8. Webhook: after login. Go the administrattion ---> Configuration ----> webhooks ----> Given the name and mention the url like this: http://13.127.239.199:8080/sonarqube-webhook/
+
+9. Secrets: Go the Account in Sonarqube server: My Account ----> Security ----> Enter the token name and type.. Copy the token id.
+.
+10. Projects: Create a project in the sonarqubeserver... Go to the projects ----> Create a project manually ----> Given the name and key (Youtube-CICD) ---> Choose locally ----> 
+
+10. GO back to the jenkins server: GO to the manage jenkins ----> Credentails ----> Global Credentails ----> Secret Text ----> Paste the token id under the secret and given the id and description.
+
+11. Login to the docker hub: Account Settings ----> Personal Access token ---> Generate a token ---> COpy the token..
+
+12. GO to the manage jenkins ----> Credentails ----> Global Credentails -----> Username with Password -----> Paste the token and given the username of your docker hub and mention the id and description.
+	
+13. GO to the manage jenkins ----> System ----> SonarQube servers ----> Mention the url and name along with sonartoken.
+
+14. Create a cluster:
+	sudo apt install unzip
+	Instll aws cli: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+	
+15. Install eksctl: https://eksctl.io/installation/
+
+16. Install kubectl: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
+16.Create a role with admin access and attach it to jenkins-server.. Go the IAM ---> ROle ---> CHoose the service as ec2 ----> Attach admin access policy
+
+17. Cluster Creation:
+
+	eksctl create cluster --name youtubeclone \
+	--region ap-south-1 \
+	--node-type t2.medium \
+	--nodes 3 \
+	
